@@ -1,0 +1,30 @@
+# Render blueprint — one free web service serving both the API and the built SPA.
+#
+# The compiled frontend lives in frontend/dist and is committed, so the Python
+# build step never needs a Node toolchain. Re-run `npm run build` after any
+# frontend change (see README).
+services:
+  - type: web
+    name: spotter
+    runtime: python
+    plan: free
+    region: oregon
+    buildCommand: cd backend && pip install -r requirements.txt && python manage.py collectstatic --noinput
+    startCommand: cd backend && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    healthCheckPath: /api/health/
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.3
+      - key: DJANGO_DEBUG
+        value: "false"
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_ALLOWED_HOSTS
+        value: ".onrender.com"
+      # The free instance has an ephemeral disk; the cache only has to survive
+      # a request or two, so /tmp is enough.
+      - key: DJANGO_CACHE_DIR
+        value: /tmp/spotter-cache
+      # Set this in the Render dashboard. Never commit it.
+      - key: ORS_API_KEY
+        sync: false

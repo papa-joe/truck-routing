@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+
+# Secrets and local state
+.env
+.cache/
+backend/staticfiles/
+*.log
+
+# Node
+node_modules/
+npm-debug.log*
+
+# OS
+.DS_Store
+
+# NOTE: frontend/dist is committed on purpose so the free Python build
+# environment does not need a Node toolchain. Run `make build` and commit the
+# result whenever frontend source changes.
